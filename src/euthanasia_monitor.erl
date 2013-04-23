@@ -60,6 +60,10 @@ handle_info(poll, State = #state{interval=Interval}) ->
     Result;
 handle_info({timeout, GCRef, gc}, State = #state{gc_ref=GCRef}) ->
     check_process_memory(State);
+handle_info({'DOWN', Ref, process, Pid, normal}, S=#state{ref=Ref, pid=Pid}) ->
+    {stop, normal, S};
+handle_info({'DOWN', Ref, process, Pid, shutdown}, S=#state{ref=Ref, pid=Pid}) ->
+    {stop, normal, S};
 handle_info({'DOWN', Ref, process, Pid, Reason}, S=#state{ref=Ref, pid=Pid}) ->
     error_logger:error_report([
         "Euthanasia: monitored process unexpectedly exited",
